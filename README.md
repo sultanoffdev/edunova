@@ -50,6 +50,18 @@ curl "https://api.telegram.org/bot<BOT_TOKEN>/getWebhookInfo"
 
 Vercel serverless muhitida `python bot.py` orqali polling ishga tushirilmaydi.
 
+## Render'ga deploy qilish
+
+1. Render.com saytida GitHub repository'ni ulang va `render.yaml` orqali deploy qiling.
+2. Environment Variables bo'limiga `BOT_TOKEN`, `ADMIN_IDS`, `CHANNEL_USERNAME` va `CHANNEL_URL` qiymatlarini kiriting.
+3. Deploy tugagach, Telegram webhook'ini Render URL'iga ulang:
+
+```powershell
+curl "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=https://<RENDER-DOMAIN>/webhook"
+```
+
+Render bepul web service uzoq vaqt trafik bo'lmasa uxlab qolishi mumkin. Telegram yangi xabar kelganda service qayta ishga tushadi, lekin birinchi javob biroz kechikishi mumkin.
+
 ## Ishlash tartibi
 
 - Foydalanuvchi `/start` yuboradi.
