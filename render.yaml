@@ -2,8 +2,10 @@ services:
   - type: web
     name: edunova-bot
     runtime: python
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    healthCheckPath: /
     envVars:
       - key: BOT_TOKEN
         sync: false
