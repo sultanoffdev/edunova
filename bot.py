@@ -5,7 +5,7 @@ from contextlib import suppress
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ChatMemberStatus, ParseMode
+from aiogram.enums import ChatMemberStatus, ChatType, ParseMode
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
@@ -24,9 +24,6 @@ ADMIN_IDS = [
 ]
 CHANNEL_USERNAME = os.getenv("CHANNEL_USERNAME", "@edunova_maktabi")
 CHANNEL_URL = os.getenv("CHANNEL_URL", "https://t.me/edunova_maktabi")
-
-if not BOT_TOKEN:
-    raise RuntimeError("BOT_TOKEN .env faylida ko'rsatilmagan")
 
 logging.basicConfig(level=logging.INFO)
 router = Router()
@@ -104,6 +101,13 @@ async def check_subscription_handler(callback: CallbackQuery, bot: Bot) -> None:
 
 @router.callback_query(F.data.startswith("feedback:"))
 async def feedback_type_handler(callback: CallbackQuery, bot: Bot, state: FSMContext) -> None:
+    if callback.message.chat.type != ChatType.PRIVATE:
+        await callback.answer(
+            "Fikr yuborish uchun bot bilan shaxsiy chatni oching.",
+            show_alert=True,
+        )
+        return
+
     if not await is_subscribed(bot, callback.from_user.id):
         await callback.answer("Avval kanalga obuna bo'ling", show_alert=True)
         return
@@ -120,6 +124,12 @@ async def feedback_type_handler(callback: CallbackQuery, bot: Bot, state: FSMCon
 
 @router.message(FeedbackForm.waiting_for_text, F.text != "/cancel")
 async def feedback_message_handler(message: Message, state: FSMContext, bot: Bot) -> None:
+    if message.chat.type != ChatType.PRIVATE:
+        await state.clear()
+        with suppress(TelegramBadRequest):
+            await message.delete()
+        return
+
     if not await is_subscribed(bot, message.from_user.id):
         await state.clear()
         await require_subscription(message, bot)
@@ -132,6 +142,9 @@ async def feedback_message_handler(message: Message, state: FSMContext, bot: Bot
         f"📩 Yangi {feedback_type}\n\n"
         f"{message.text}"
     )
+    with suppress(TelegramBadRequest):
+        await message.delete()
+
     for admin_id in ADMIN_IDS:
         try:
             await bot.send_message(admin_id, admin_text)
@@ -156,6 +169,9 @@ async def cancel_handler(message: Message, state: FSMContext) -> None:
 
 
 async def main() -> None:
+    if not BOT_TOKEN:
+        raise RuntimeError("BOT_TOKEN .env faylida ko'rsatilmagan")
+
     bot = Bot(
         token=BOT_TOKEN,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML),

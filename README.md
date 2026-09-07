@@ -27,6 +27,29 @@ Copy-Item .env.example .env
 python bot.py
 ```
 
+## Vercel'ga deploy qilish
+
+Vercel `api/index.py` webhook endpointini avtomatik serverless function sifatida ishga tushiradi. Project Settings > Environment Variables bo'limida quyidagi qiymatlarni Production, Preview va Development uchun qo'shing:
+
+- `BOT_TOKEN`
+- `ADMIN_IDS` (masalan, `7180980386`)
+- `CHANNEL_USERNAME`
+- `CHANNEL_URL`
+
+Deploy tugagach, Telegram webhook'ini Vercel URL'iga ulang:
+
+```powershell
+curl "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=https://<VERCEL-DOMAIN>/api"
+```
+
+Webhook holatini tekshirish:
+
+```powershell
+curl "https://api.telegram.org/bot<BOT_TOKEN>/getWebhookInfo"
+```
+
+Vercel serverless muhitida `python bot.py` orqali polling ishga tushirilmaydi.
+
 ## Ishlash tartibi
 
 - Foydalanuvchi `/start` yuboradi.
