@@ -17,7 +17,7 @@ dispatcher.include_router(router)
 
 async def process_update(payload: dict) -> None:
     if not BOT_TOKEN:
-        raise RuntimeError("BOT_TOKEN Render Environment Variable ichida sozlanmagan")
+        raise RuntimeError("BOT_TOKEN environment variable ichida sozlanmagan")
 
     bot = Bot(token=BOT_TOKEN)
     try:

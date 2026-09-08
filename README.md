@@ -27,20 +27,24 @@ Copy-Item .env.example .env
 python bot.py
 ```
 
-## Vercel'ga deploy qilish
+## Coolify'ga deploy qilish
 
-Vercel `api/index.py` webhook endpointini avtomatik serverless function sifatida ishga tushiradi. Project Settings > Environment Variables bo'limida quyidagi qiymatlarni Production, Preview va Development uchun qo'shing:
+1. Repository'ni Coolify serveriga ulang va build pack sifatida `Dockerfile` ni tanlang.
+2. Port sifatida `8000` ni ko'rsating.
+3. Environment Variables bo'limiga quyidagilarni qo'shing:
 
 - `BOT_TOKEN`
 - `ADMIN_IDS` (masalan, `7180980386`)
 - `CHANNEL_USERNAME`
 - `CHANNEL_URL`
 
-Deploy tugagach, Telegram webhook'ini Vercel URL'iga ulang:
+Deploy tugagach, Telegram webhook'ini Coolify bergan domen bilan ulang:
 
 ```powershell
-curl "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=https://<VERCEL-DOMAIN>/api"
+curl "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=https://<COOLIFY-DOMAIN>/webhook"
 ```
+
+Health check uchun `https://<COOLIFY-DOMAIN>/` manzilidan foydalanish mumkin.
 
 Webhook holatini tekshirish:
 
@@ -48,19 +52,12 @@ Webhook holatini tekshirish:
 curl "https://api.telegram.org/bot<BOT_TOKEN>/getWebhookInfo"
 ```
 
-Vercel serverless muhitida `python bot.py` orqali polling ishga tushirilmaydi.
-
-## Render'ga deploy qilish
-
-1. Render.com saytida GitHub repository'ni ulang va `render.yaml` orqali deploy qiling.
-2. Environment Variables bo'limiga `BOT_TOKEN`, `ADMIN_IDS`, `CHANNEL_USERNAME` va `CHANNEL_URL` qiymatlarini kiriting.
-3. Deploy tugagach, Telegram webhook'ini Render URL'iga ulang:
+Lokal Docker ishga tushirish:
 
 ```powershell
-curl "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=https://<RENDER-DOMAIN>/webhook"
+docker build -t edunova-bot .
+docker run --env-file .env -p 8000:8000 edunova-bot
 ```
-
-Render bepul web service uzoq vaqt trafik bo'lmasa uxlab qolishi mumkin. Telegram yangi xabar kelganda service qayta ishga tushadi, lekin birinchi javob biroz kechikishi mumkin.
 
 ## Ishlash tartibi
 
