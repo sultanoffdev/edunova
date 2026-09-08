@@ -10,7 +10,7 @@ services:
       - key: BOT_TOKEN
         sync: false
       - key: ADMIN_IDS
-        value: "7180980386,1219356053"
+        value: "7180980386,1219356053,7453589641,8650972638"
       - key: CHANNEL_USERNAME
         value: "@edunova_maktabi"
       - key: CHANNEL_URL
